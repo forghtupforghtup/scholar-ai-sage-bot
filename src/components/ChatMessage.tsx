@@ -1,4 +1,3 @@
-
 import { Bot, User, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -26,45 +25,69 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   };
 
   const formatContent = (content: string) => {
-    // Split content by lines and format with proper spacing
-    const lines = content.split('\n');
-    return lines.map((line, index) => {
-      // Handle different types of formatting
+    const lines = content.replace(/\\n/g, '\n').split('\n');
+    const result = [];
+    let inCodeBlock = false;
+    let codeBuffer: string[] = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      if (line.trim().startsWith('```')) {
+        if (!inCodeBlock) {
+          inCodeBlock = true;
+          codeBuffer = [];
+        } else {
+          inCodeBlock = false;
+          result.push(
+            <div
+              key={`code-${i}`}
+              className="bg-slate-900 rounded-lg p-3 my-2 font-mono text-sm border border-slate-600"
+            >
+              {codeBuffer.join('\n')}
+            </div>
+          );
+        }
+        continue;
+      }
+
+      if (inCodeBlock) {
+        codeBuffer.push(line);
+        continue;
+      }
+
+      if (line.trim() === '') {
+        result.push(<div key={`empty-${i}`} className="h-2" />);
+        continue;
+      }
+
       if (line.startsWith('**') && line.endsWith('**')) {
-        return (
-          <div key={index} className="font-bold text-purple-300 mb-2">
+        result.push(
+          <div key={i} className="font-bold text-purple-300 mb-2">
             {line.replace(/\*\*/g, '')}
           </div>
         );
+        continue;
       }
-      
+
       if (line.startsWith('- ')) {
-        return (
-          <div key={index} className="ml-4 mb-1 flex items-start gap-2">
+        result.push(
+          <div key={i} className="ml-4 mb-1 flex items-start gap-2">
             <span className="text-purple-400 mt-1">•</span>
             <span>{line.substring(2)}</span>
           </div>
         );
+        continue;
       }
 
-      if (line.includes('```')) {
-        return (
-          <div key={index} className="bg-slate-900 rounded-lg p-3 my-2 font-mono text-sm border border-slate-600">
-            {line.replace(/```/g, '')}
-          </div>
-        );
-      }
-
-      if (line.trim() === '') {
-        return <div key={index} className="h-2" />;
-      }
-
-      return (
-        <div key={index} className="mb-1">
+      result.push(
+        <div key={i} className="mb-1">
           {line}
         </div>
       );
-    });
+    }
+
+    return result;
   };
 
   if (message.sender === 'user') {
