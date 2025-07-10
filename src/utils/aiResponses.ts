@@ -1,5 +1,5 @@
 export const generateAIResponse = async (prompt: string, subject: string): Promise<string> => {
-  const apiKey = (window as any).VITE_GITHUB_API_KEY;
+  const apiKey = (window as any).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;
 
   if (!apiKey) {
     return "❌ No API key provided. Please enter your GPT-4 key first.";
