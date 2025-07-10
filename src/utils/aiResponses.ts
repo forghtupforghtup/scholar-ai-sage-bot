@@ -1,21 +1,21 @@
 
 export const generateAIResponse = async (question: string, subject: string): Promise<string> => {
   // Check if API key is available
-  const apiKey = (window as any).VITE_OPENAI_API_KEY || import.meta.env.VITE_OPENAI_API_KEY;
+  const apiKey = (window as any).VITE_GITHUB_API_KEY || import.meta.env.VITE_GITHUB_API_KEY;
   
   if (!apiKey) {
     return getFallbackResponse(question, subject);
   }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -47,14 +47,14 @@ Always be encouraging, educational, and thorough in your explanations. Use forma
     const data = await response.json();
     return data.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response. Please try again.";
   } catch (error) {
-    console.error('Error calling AI API:', error);
+    console.error('Error calling GitHub AI API:', error);
     
     if (error instanceof Error && error.message.includes('401')) {
-      return "**API Key Error:** Your OpenAI API key appears to be invalid. Please check your API key and try again.";
+      return "**API Key Error:** Your GitHub API key appears to be invalid. Please check your API key and try again.";
     }
     
     if (error instanceof Error && error.message.includes('429')) {
-      return "**Rate Limit:** You've exceeded your API usage limits. Please wait a moment or check your OpenAI billing.";
+      return "**Rate Limit:** You've exceeded your API usage limits. Please wait a moment or check your GitHub API billing.";
     }
     
     return getFallbackResponse(question, subject);
@@ -77,9 +77,8 @@ I can see this is a multiple choice question. To give you the detailed analysis 
 - Provide background context and study tips
 
 **To get real AI responses:**
-1. Get a free OpenAI API key at https://platform.openai.com/api-keys
-2. Enter it in the yellow box above
-3. Ask your question again for detailed analysis!
+1. Enter your GitHub API key in the yellow box above
+2. Ask your question again for detailed analysis!
 
 **Study tip:** Even without AI, try to eliminate obviously wrong answers first, then choose between the remaining options based on your knowledge of the topic.`;
   }
@@ -87,7 +86,7 @@ I can see this is a multiple choice question. To give you the detailed analysis 
   if (questionLower.includes('help') || questionLower.includes('explain') || questionLower.includes('how')) {
     return `**I'd love to help explain this topic!**
 
-For detailed explanations and step-by-step breakdowns, I need to be connected to a real AI service like OpenAI.
+For detailed explanations and step-by-step breakdowns, I need to be connected to a real AI service like GitHub's AI.
 
 **What real AI can do for you:**
 - Explain complex concepts in simple terms
@@ -97,9 +96,8 @@ For detailed explanations and step-by-step breakdowns, I need to be connected to
 - Adapt explanations to your level
 
 **To unlock real AI help:**
-1. Get an OpenAI API key (free at https://platform.openai.com/api-keys)
-2. Enter it above in the yellow "Connect Real AI" box
-3. Ask any question for intelligent responses!
+1. Enter your GitHub API key above in the yellow "Connect Real AI" box
+2. Ask any question for intelligent responses!
 
 **Subject: ${subject}**
 I'm ready to help with any topic in ${subject} once connected to real AI!`;
@@ -117,10 +115,8 @@ I can see you want to ask about ${subject}. To give you the intelligent, detaile
 ✓ Follow-up questions and clarification
 
 **Quick setup:**
-1. Visit https://platform.openai.com/api-keys
-2. Create a free account and get your API key
-3. Paste it in the yellow box above
-4. Start getting real AI responses!
+1. Enter your GitHub API key in the yellow box above
+2. Start getting real AI responses!
 
 Ask me anything once connected - from basic concepts to complex problems!`;
 };

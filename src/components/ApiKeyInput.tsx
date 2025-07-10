@@ -26,7 +26,7 @@ const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
       <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-4 mb-4">
         <div className="flex items-center gap-2 text-green-400">
           <Key className="h-4 w-4" />
-          <span className="text-sm font-medium">Real AI Connected!</span>
+          <span className="text-sm font-medium">GitHub AI Connected!</span>
         </div>
         <p className="text-green-300 text-xs mt-1">
           You can now ask any question and get intelligent responses.
@@ -39,11 +39,11 @@ const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
     <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 mb-4">
       <div className="flex items-center gap-2 text-yellow-400 mb-3">
         <Key className="h-4 w-4" />
-        <span className="text-sm font-medium">Connect Real AI</span>
+        <span className="text-sm font-medium">Connect GitHub AI</span>
       </div>
       <p className="text-yellow-300 text-xs mb-3">
-        Enter your OpenAI API key to get intelligent responses like ChatGPT. 
-        Get one free at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">OpenAI</a>
+        Enter your GitHub API key to get intelligent responses. 
+        Your GitHub AI key should work here.
       </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <div className="flex-1 relative">
@@ -51,7 +51,7 @@ const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
             type={showKey ? "text" : "password"}
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
-            placeholder="sk-..."
+            placeholder="gho_..."
             className="bg-slate-800 border-slate-600 text-white text-xs pr-10"
           />
           <button

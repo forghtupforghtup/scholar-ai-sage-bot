@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, BookOpen, Calculator, Atom, Globe, Palette, Code, Brain, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -45,7 +44,7 @@ const Index = () => {
   const handleApiKeySet = (key: string) => {
     setApiKey(key);
     // Store in environment variable for the AI response function
-    (window as any).VITE_OPENAI_API_KEY = key;
+    (window as any).VITE_GITHUB_API_KEY = key;
   };
 
   const handleSendMessage = async () => {
@@ -111,7 +110,7 @@ const Index = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">EduAI Assistant</h1>
-              <p className="text-slate-400 text-sm">Your intelligent study companion powered by real AI</p>
+              <p className="text-slate-400 text-sm">Your intelligent study companion powered by GitHub AI</p>
             </div>
           </div>
         </div>
@@ -145,7 +144,7 @@ const Index = () => {
                       {currentSubject?.name || 'General'}
                     </h2>
                     <p className="text-slate-400 text-sm">
-                      {apiKey ? 'Real AI ready to help!' : 'Connect API for intelligent responses'}
+                      {apiKey ? 'GitHub AI ready to help!' : 'Connect API for intelligent responses'}
                     </p>
                   </div>
                 </div>
@@ -191,7 +190,7 @@ const Index = () => {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder={apiKey ? "Ask me anything about your studies..." : "Connect API key above for intelligent responses..."}
+                    placeholder={apiKey ? "Ask me anything about your studies..." : "Connect GitHub API key above for intelligent responses..."}
                     className="bg-slate-800 border-slate-600 text-white placeholder-slate-400 pr-12 py-3 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     disabled={isTyping}
                   />
@@ -205,7 +204,7 @@ const Index = () => {
                 </Button>
               </div>
               <p className="text-slate-500 text-xs mt-2 text-center">
-                {apiKey ? 'Ask multiple choice questions, request explanations, or get help with any topic!' : 'Add your OpenAI API key above to unlock real AI responses'}
+                {apiKey ? 'Ask multiple choice questions, request explanations, or get help with any topic!' : 'Add your GitHub API key above to unlock real AI responses'}
               </p>
             </div>
           </div>
