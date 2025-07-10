@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import ChatMessage from '@/components/ChatMessage';
 import SubjectSelector from '@/components/SubjectSelector';
+import ApiKeyInput from '@/components/ApiKeyInput';
 import { generateAIResponse } from '@/utils/aiResponses';
 
 interface Message {
@@ -21,7 +22,7 @@ const Index = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hi! I'm your AI Study Assistant. I'm here to help you with any academic question - from AP classes to college prep. What would you like to learn about today?",
+      content: "Hi! I'm your AI Study Assistant. I can help you with any academic question - from multiple choice questions to complex topics. Ask me anything!",
       sender: 'ai',
       timestamp: new Date(),
     }
@@ -29,6 +30,7 @@ const Index = () => {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<string>('general');
+  const [apiKey, setApiKey] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -39,6 +41,12 @@ const Index = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleApiKeySet = (key: string) => {
+    setApiKey(key);
+    // Store in environment variable for the AI response function
+    (window as any).VITE_OPENAI_API_KEY = key;
+  };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -103,7 +111,7 @@ const Index = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">EduAI Assistant</h1>
-              <p className="text-slate-400 text-sm">Your intelligent study companion for AP classes & beyond</p>
+              <p className="text-slate-400 text-sm">Your intelligent study companion powered by real AI</p>
             </div>
           </div>
         </div>
@@ -112,7 +120,8 @@ const Index = () => {
       <div className="container mx-auto px-4 py-6 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
           {/* Subject Selector */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-4">
+            <ApiKeyInput onApiKeySet={handleApiKeySet} hasApiKey={!!apiKey} />
             <SubjectSelector 
               subjects={subjects}
               selectedSubject={selectedSubject}
@@ -135,11 +144,16 @@ const Index = () => {
                     <h2 className="text-lg font-semibold text-white">
                       {currentSubject?.name || 'General'}
                     </h2>
-                    <p className="text-slate-400 text-sm">AI Assistant ready to help</p>
+                    <p className="text-slate-400 text-sm">
+                      {apiKey ? 'Real AI ready to help!' : 'Connect API for intelligent responses'}
+                    </p>
                   </div>
                 </div>
-                <Badge variant="secondary" className="ml-auto bg-green-500/20 text-green-400 border-green-500/50">
-                  Online
+                <Badge 
+                  variant="secondary" 
+                  className={`ml-auto ${apiKey ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50'}`}
+                >
+                  {apiKey ? 'AI Connected' : 'Demo Mode'}
                 </Badge>
               </div>
             </div>
@@ -177,7 +191,7 @@ const Index = () => {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask me anything about your studies..."
+                    placeholder={apiKey ? "Ask me anything about your studies..." : "Connect API key above for intelligent responses..."}
                     className="bg-slate-800 border-slate-600 text-white placeholder-slate-400 pr-12 py-3 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     disabled={isTyping}
                   />
@@ -191,7 +205,7 @@ const Index = () => {
                 </Button>
               </div>
               <p className="text-slate-500 text-xs mt-2 text-center">
-                Press Enter to send • AI responses are generated for educational purposes
+                {apiKey ? 'Ask multiple choice questions, request explanations, or get help with any topic!' : 'Add your OpenAI API key above to unlock real AI responses'}
               </p>
             </div>
           </div>
