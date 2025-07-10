@@ -88,6 +88,9 @@ const Index = () => {
     { id: 'computer', name: 'Computer Science', icon: Code, color: 'bg-indigo-500' },
   ];
 
+  const currentSubject = subjects.find(s => s.id === selectedSubject);
+  const CurrentIcon = currentSubject?.icon;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
@@ -123,14 +126,14 @@ const Index = () => {
             <div className="bg-slate-700/50 px-6 py-4 border-b border-slate-600/50">
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  {subjects.find(s => s.id === selectedSubject)?.icon && (
-                    <div className={`p-2 rounded-lg ${subjects.find(s => s.id === selectedSubject)?.color}`}>
-                      {subjects.find(s => s.id === selectedSubject)?.icon({ className: "h-5 w-5 text-white" })}
+                  {CurrentIcon && (
+                    <div className={`p-2 rounded-lg ${currentSubject?.color}`}>
+                      <CurrentIcon className="h-5 w-5 text-white" />
                     </div>
                   )}
                   <div>
                     <h2 className="text-lg font-semibold text-white">
-                      {subjects.find(s => s.id === selectedSubject)?.name || 'General'}
+                      {currentSubject?.name || 'General'}
                     </h2>
                     <p className="text-slate-400 text-sm">AI Assistant ready to help</p>
                   </div>
