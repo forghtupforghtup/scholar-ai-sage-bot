@@ -3,18 +3,19 @@ export const generateAIResponse = async (question: string, subject: string): Pro
   // Your GitHub API key is embedded directly
   const apiKey = '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';
   
-  // Remove the validation check since we have a valid key embedded
   if (!apiKey) {
     console.error('GitHub API key not configured');
     return getFallbackResponse(question, subject);
   }
 
   try {
+    // Using GitHub Models API endpoint
     const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
+        'User-Agent': 'EduAI-Assistant',
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
@@ -41,24 +42,42 @@ Always be encouraging, educational, and thorough in your explanations. Use forma
       }),
     });
 
+    console.log('API Response status:', response.status);
+    
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('API Response Error:', response.status, errorData);
+      const errorText = await response.text();
+      console.error('API Response Error:', response.status, errorText);
+      
+      // Try to parse as JSON, fallback to text
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: { message: errorText } };
+      }
+      
       throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
-    console.log('API Response received:', data);
+    console.log('API Response received successfully');
     return data.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response. Please try again.";
   } catch (error) {
     console.error('Error calling GitHub AI API:', error);
     
-    if (error instanceof Error && error.message.includes('401')) {
-      return "**API Key Error:** There's an issue with the API authentication. Please contact support.";
-    }
-    
-    if (error instanceof Error && error.message.includes('429')) {
-      return "**Rate Limit:** The AI service is currently busy. Please wait a moment and try again.";
+    if (error instanceof Error) {
+      if (error.message.includes('401')) {
+        console.error('Authentication failed - API key may be invalid or expired');
+        return "**API Key Issue:** The GitHub API key appears to be invalid or expired. Please check if the key is still active in your GitHub settings and has the necessary permissions for AI models.";
+      }
+      
+      if (error.message.includes('429')) {
+        return "**Rate Limit:** The AI service is currently busy. Please wait a moment and try again.";
+      }
+      
+      if (error.message.includes('403')) {
+        return "**Permission Error:** The API key doesn't have access to AI models. Please ensure your GitHub account has access to GitHub Models.";
+      }
     }
     
     return getFallbackResponse(question, subject);
