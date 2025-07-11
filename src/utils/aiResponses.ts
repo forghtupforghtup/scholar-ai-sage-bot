@@ -1,7 +1,7 @@
 
 export const generateAIResponse = async (question: string, subject: string): Promise<string> => {
   // Your GitHub API key is embedded directly
-  const apiKey = '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';
+  const apiKey = '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';
   
   // Remove the validation check since we have a valid key embedded
   if (!apiKey) {
