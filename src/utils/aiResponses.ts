@@ -1,9 +1,10 @@
 
 export const generateAIResponse = async (question: string, subject: string): Promise<string> => {
-  // Use your GitHub API key directly - replace 'YOUR_GITHUB_API_KEY_HERE' with your actual key
+  // Your GitHub API key is embedded directly
   const apiKey = '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';
   
-  if (!apiKey || apiKey === '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') {
+  // Remove the validation check since we have a valid key embedded
+  if (!apiKey) {
     console.error('GitHub API key not configured');
     return getFallbackResponse(question, subject);
   }
@@ -42,16 +43,18 @@ Always be encouraging, educational, and thorough in your explanations. Use forma
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('API Response Error:', response.status, errorData);
       throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
+    console.log('API Response received:', data);
     return data.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response. Please try again.";
   } catch (error) {
     console.error('Error calling GitHub AI API:', error);
     
     if (error instanceof Error && error.message.includes('401')) {
-      return "**API Key Error:** There's an issue with the API configuration. Please contact support.";
+      return "**API Key Error:** There's an issue with the API authentication. Please contact support.";
     }
     
     if (error instanceof Error && error.message.includes('429')) {
