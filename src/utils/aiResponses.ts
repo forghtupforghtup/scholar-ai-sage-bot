@@ -1,9 +1,9 @@
 
 export const generateAIResponse = async (question: string, subject: string): Promise<string> => {
   // Use your GitHub API key directly - replace 'YOUR_GITHUB_API_KEY_HERE' with your actual key
-  const apiKey = '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';
+  const apiKey = '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';
   
-  if (!apiKey || apiKey === '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') {
+  if (!apiKey || apiKey === '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') {
     console.error('GitHub API key not configured');
     return getFallbackResponse(question, subject);
   }
