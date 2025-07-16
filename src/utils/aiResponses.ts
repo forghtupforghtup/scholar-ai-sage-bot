@@ -1,9 +1,10 @@
 
 export const generateAIResponse = async (question: string, subject: string): Promise<string> => {
-  // Check if API key is available
-  const apiKey = (window as any).VITE_GITHUB_API_KEY || import.meta.env.VITE_GITHUB_API_KEY;
+  // Use your GitHub API key directly - replace 'YOUR_GITHUB_API_KEY_HERE' with your actual key
+  const apiKey = 'YOUR_GITHUB_API_KEY_HERE';
   
-  if (!apiKey) {
+  if (!apiKey || apiKey === 'YOUR_GITHUB_API_KEY_HERE') {
+    console.error('GitHub API key not configured');
     return getFallbackResponse(question, subject);
   }
 
@@ -50,11 +51,11 @@ Always be encouraging, educational, and thorough in your explanations. Use forma
     console.error('Error calling GitHub AI API:', error);
     
     if (error instanceof Error && error.message.includes('401')) {
-      return "**API Key Error:** Your GitHub API key appears to be invalid. Please check your API key and try again.";
+      return "**API Key Error:** There's an issue with the API configuration. Please contact support.";
     }
     
     if (error instanceof Error && error.message.includes('429')) {
-      return "**Rate Limit:** You've exceeded your API usage limits. Please wait a moment or check your GitHub API billing.";
+      return "**Rate Limit:** The AI service is currently busy. Please wait a moment and try again.";
     }
     
     return getFallbackResponse(question, subject);
