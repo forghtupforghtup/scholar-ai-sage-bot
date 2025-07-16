@@ -1,3 +1,4 @@
+
 import { Bot, User, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -25,15 +26,24 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   };
 
   const formatContent = (content: string) => {
-    const lines = content.replace(/\\n/g, '\n').split('\n');
+    // Clean up the content first - remove weird slash artifacts
+    const cleanContent = content
+      .replace(/\/\s*\/\s*\/\s*/g, '') // Remove multiple slashes with spaces
+      .replace(/\/\s+/g, ' ') // Replace slash followed by spaces with just space
+      .replace(/\s+\/\s+/g, ' ') // Replace spaces-slash-spaces with just space
+      .replace(/\/+/g, '') // Remove any remaining multiple slashes
+      .replace(/\\n/g, '\n') // Convert literal \n to actual newlines
+      .trim();
+
+    const lines = cleanContent.split('\n');
     const result = [];
     let inCodeBlock = false;
     let codeBuffer: string[] = [];
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+      const line = lines[i].trim(); // Trim each line
 
-      if (line.trim().startsWith('```')) {
+      if (line.startsWith('```')) {
         if (!inCodeBlock) {
           inCodeBlock = true;
           codeBuffer = [];
@@ -42,9 +52,9 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
           result.push(
             <div
               key={`code-${i}`}
-              className="bg-slate-900 rounded-lg p-3 my-2 font-mono text-sm border border-slate-600"
+              className="bg-slate-900 rounded-lg p-3 my-2 font-mono text-sm border border-slate-600 overflow-x-auto"
             >
-              {codeBuffer.join('\n')}
+              <pre className="whitespace-pre-wrap">{codeBuffer.join('\n')}</pre>
             </div>
           );
         }
@@ -56,12 +66,12 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
         continue;
       }
 
-      if (line.trim() === '') {
+      if (line === '') {
         result.push(<div key={`empty-${i}`} className="h-2" />);
         continue;
       }
 
-      if (line.startsWith('**') && line.endsWith('**')) {
+      if (line.startsWith('**') && line.endsWith('**') && line.length > 4) {
         result.push(
           <div key={i} className="font-bold text-purple-300 mb-2">
             {line.replace(/\*\*/g, '')}
@@ -73,17 +83,22 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       if (line.startsWith('- ')) {
         result.push(
           <div key={i} className="ml-4 mb-1 flex items-start gap-2">
-            <span className="text-purple-400 mt-1">•</span>
-            <span>{line.substring(2)}</span>
+            <span className="text-purple-400 mt-1 flex-shrink-0">•</span>
+            <span className="flex-1">{line.substring(2)}</span>
           </div>
         );
         continue;
       }
 
+      // Handle inline bold text
+      const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-purple-300">$1</strong>');
+
       result.push(
-        <div key={i} className="mb-1">
-          {line}
-        </div>
+        <div 
+          key={i} 
+          className="mb-1" 
+          dangerouslySetInnerHTML={{ __html: formattedLine }}
+        />
       );
     }
 
