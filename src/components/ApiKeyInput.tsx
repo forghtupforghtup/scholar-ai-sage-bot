@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Key, Eye, EyeOff } from 'lucide-react';
@@ -10,16 +10,23 @@ interface ApiKeyInputProps {
 }
 
 const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
-  const [apiKey, setApiKey] = useState('');
+  // Pre-fill with your GitHub API key - replace with your actual key
+  const [apiKey, setApiKey] = useState('YOUR_GITHUB_API_KEY_HERE');
   const [showKey, setShowKey] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (apiKey.trim()) {
       onApiKeySet(apiKey.trim());
-      setApiKey('');
     }
   };
+
+  // Auto-connect with pre-filled key on component mount
+  React.useEffect(() => {
+    if (apiKey && apiKey !== 'YOUR_GITHUB_API_KEY_HERE' && !hasApiKey) {
+      onApiKeySet(apiKey);
+    }
+  }, []);
 
   if (hasApiKey) {
     return (
@@ -42,8 +49,7 @@ const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
         <span className="text-sm font-medium">Connect GitHub AI</span>
       </div>
       <p className="text-yellow-300 text-xs mb-3">
-        Enter your GitHub API key to get intelligent responses. 
-        Your GitHub AI key should work here.
+        GitHub API key is pre-filled. Click Connect to activate AI responses.
       </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <div className="flex-1 relative">
