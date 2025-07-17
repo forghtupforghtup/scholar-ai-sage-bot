@@ -10,7 +10,7 @@ interface ApiKeyInputProps {
 }
 
 const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
-  const [apiKey, setApiKey] = useState('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');
+  const [apiKey, setApiKey] = useState('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');
   const [showKey, setShowKey] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
