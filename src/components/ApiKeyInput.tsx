@@ -23,10 +23,10 @@ const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
 
   // Auto-connect with pre-filled key on component mount
   React.useEffect(() => {
-    if (apiKey && apiKey !== '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' && !hasApiKey) {
+    if (apiKey && !hasApiKey) {
       onApiKeySet(apiKey);
     }
-  }, []);
+  }, [apiKey, hasApiKey, onApiKeySet]);
 
   if (hasApiKey) {
     return (
