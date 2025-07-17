@@ -10,8 +10,7 @@ interface ApiKeyInputProps {
 }
 
 const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
-  // Replace this with your actual GitHub API key
-  const [apiKey, setApiKey] = useState('YOUR_ACTUAL_GITHUB_API_KEY_HERE');
+  const [apiKey, setApiKey] = useState('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');
   const [showKey, setShowKey] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -23,7 +22,7 @@ const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
 
   // Auto-connect with pre-filled key on component mount
   React.useEffect(() => {
-    if (apiKey && apiKey !== 'YOUR_ACTUAL_GITHUB_API_KEY_HERE' && !hasApiKey) {
+    if (apiKey && !hasApiKey) {
       onApiKeySet(apiKey);
     }
   }, [apiKey, hasApiKey, onApiKeySet]);
@@ -49,7 +48,7 @@ const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
         <span className="text-sm font-medium">Connect GitHub AI</span>
       </div>
       <p className="text-yellow-300 text-xs mb-3">
-        Replace the placeholder with your actual GitHub API key.
+        GitHub API key is ready to connect automatically.
       </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <div className="flex-1 relative">
