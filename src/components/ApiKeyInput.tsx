@@ -11,7 +11,8 @@ interface ApiKeyInputProps {
 
 const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
   // Replace this with your actual GitHub API key
-  const [apiKey, setApiKey] = useState('YOUR_ACTUAL_GITHUB_API_KEY_HERE');
+  const [apiKey, setApiKey] = useState('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
+');
   const [showKey, setShowKey] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -23,7 +24,7 @@ const ApiKeyInput = ({ onApiKeySet, hasApiKey }: ApiKeyInputProps) => {
 
   // Auto-connect with pre-filled key on component mount
   React.useEffect(() => {
-    if (apiKey && apiKey !== 'YOUR_ACTUAL_GITHUB_API_KEY_HERE' && !hasApiKey) {
+    if (apiKey && apiKey !== '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' && !hasApiKey) {
       onApiKeySet(apiKey);
     }
   }, [apiKey, hasApiKey, onApiKeySet]);
