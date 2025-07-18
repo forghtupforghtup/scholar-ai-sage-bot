@@ -6,7 +6,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import ChatMessage from '@/components/ChatMessage';
 import SubjectSelector from '@/components/SubjectSelector';
-import ApiKeyInput from '@/components/ApiKeyInput';
 import { generateAIResponse } from '@/utils/aiResponses';
 
 interface Message {
@@ -29,7 +28,6 @@ const Index = () => {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<string>('general');
-  const [apiKey, setApiKey] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -40,12 +38,6 @@ const Index = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const handleApiKeySet = (key: string) => {
-    setApiKey(key);
-    // Store in environment variable for the AI response function
-    (window as any).VITE_GITHUB_API_KEY = key;
-  };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -119,8 +111,16 @@ const Index = () => {
       <div className="container mx-auto px-4 py-6 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
           {/* Subject Selector */}
-          <div className="lg:col-span-1 space-y-4">
-            <ApiKeyInput onApiKeySet={handleApiKeySet} hasApiKey={!!apiKey} />
+        <div className="lg:col-span-1 space-y-4">
+            <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-4 mb-4">
+              <div className="flex items-center gap-2 text-green-400">
+                <Bot className="h-4 w-4" />
+                <span className="text-sm font-medium">GitHub AI Ready!</span>
+              </div>
+              <p className="text-green-300 text-xs mt-1">
+                Securely connected via Supabase. Ask any question!
+              </p>
+            </div>
             <SubjectSelector 
               subjects={subjects}
               selectedSubject={selectedSubject}
@@ -144,15 +144,15 @@ const Index = () => {
                       {currentSubject?.name || 'General'}
                     </h2>
                     <p className="text-slate-400 text-sm">
-                      {apiKey ? 'GitHub AI ready to help!' : 'Connect API for intelligent responses'}
+                      GitHub AI ready to help via secure Supabase connection!
                     </p>
                   </div>
                 </div>
                 <Badge 
                   variant="secondary" 
-                  className={`ml-auto ${apiKey ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50'}`}
+                  className="ml-auto bg-green-500/20 text-green-400 border-green-500/50"
                 >
-                  {apiKey ? 'AI Connected' : 'Demo Mode'}
+                  AI Connected
                 </Badge>
               </div>
             </div>
@@ -190,7 +190,7 @@ const Index = () => {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder={apiKey ? "Ask me anything about your studies..." : "Connect GitHub API key above for intelligent responses..."}
+                    placeholder="Ask me anything about your studies..."
                     className="bg-slate-800 border-slate-600 text-white placeholder-slate-400 pr-12 py-3 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     disabled={isTyping}
                   />
@@ -204,7 +204,7 @@ const Index = () => {
                 </Button>
               </div>
               <p className="text-slate-500 text-xs mt-2 text-center">
-                {apiKey ? 'Ask multiple choice questions, request explanations, or get help with any topic!' : 'Add your GitHub API key above to unlock real AI responses'}
+                Ask multiple choice questions, request explanations, or get help with any topic!
               </p>
             </div>
           </div>

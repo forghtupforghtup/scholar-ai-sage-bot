@@ -1,62 +1,20 @@
 
+import { supabase } from '@/integrations/supabase/client';
+
 export const generateAIResponse = async (question: string, subject: string): Promise<string> => {
-  // Check if API key is available
-  const apiKey = (window as any).VITE_GITHUB_API_KEY || import.meta.env.VITE_GITHUB_API_KEY;
-  
-  if (!apiKey) {
-    return getFallbackResponse(question, subject);
-  }
-
   try {
-    const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an expert AI tutor specializing in ${subject === 'general' ? 'all academic subjects' : subject}. You help students with homework, explain concepts clearly, solve problems step-by-step, and provide detailed explanations for multiple choice questions. 
-
-For multiple choice questions:
-- Analyze each option (A, B, C, D)
-- Explain why the correct answer is right
-- Explain why the incorrect answers are wrong
-- Provide context and background information
-
-Always be encouraging, educational, and thorough in your explanations. Use formatting like **bold** for emphasis and bullet points for clarity.`
-          },
-          {
-            role: 'user',
-            content: question
-          }
-        ],
-        max_tokens: 1500,
-        temperature: 0.7,
-      }),
+    const { data, error } = await supabase.functions.invoke('github-ai-chat', {
+      body: { question, subject }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+    if (error) {
+      console.error('Error calling AI function:', error);
+      return getFallbackResponse(question, subject);
     }
 
-    const data = await response.json();
-    return data.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response. Please try again.";
+    return data.content || "I'm sorry, I couldn't generate a response. Please try again.";
   } catch (error) {
-    console.error('Error calling GitHub AI API:', error);
-    
-    if (error instanceof Error && error.message.includes('401')) {
-      return "**API Key Error:** Your GitHub API key appears to be invalid. Please check your API key and try again.";
-    }
-    
-    if (error instanceof Error && error.message.includes('429')) {
-      return "**Rate Limit:** You've exceeded your API usage limits. Please wait a moment or check your GitHub API billing.";
-    }
-    
+    console.error('Error calling AI function:', error);
     return getFallbackResponse(question, subject);
   }
 };
