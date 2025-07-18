@@ -13,7 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const { question, subject } = await req.json();
+    const { question, subject, conversationHistory } = await req.json();
+    
+    console.log('Received request with conversation history:', conversationHistory?.length || 0, 'messages');
     
     // Get the GitHub API key from Supabase secrets
     const githubApiKey = Deno.env.get('GITHUB_API_KEY');
@@ -33,6 +35,50 @@ serve(async (req) => {
 
     console.log('Making request to GitHub AI API for subject:', subject);
 
+    // Build messages array with conversation history
+    const messages = [
+      {
+        role: 'system',
+        content: `You are an expert AI tutor specializing in ${subject === 'general' ? 'all academic subjects' : subject}. You help students with homework, explain concepts clearly, solve problems step-by-step, and provide detailed explanations for multiple choice questions. 
+
+For multiple choice questions:
+- Analyze each option (A, B, C, D)
+- Explain why the correct answer is right
+- Explain why the incorrect answers are wrong
+- Provide context and background information
+
+Always be encouraging, educational, and thorough in your explanations. Use formatting like **bold** for emphasis and bullet points for clarity.
+
+Remember previous questions and answers in this conversation to provide better context and follow-up responses.`
+      }
+    ];
+
+    // Add conversation history if provided
+    if (conversationHistory && Array.isArray(conversationHistory)) {
+      // Convert conversation history to OpenAI message format
+      conversationHistory.forEach(msg => {
+        if (msg.sender === 'user') {
+          messages.push({
+            role: 'user', 
+            content: msg.content
+          });
+        } else if (msg.sender === 'ai') {
+          messages.push({
+            role: 'assistant',
+            content: msg.content
+          });
+        }
+      });
+    }
+
+    // Add current question
+    messages.push({
+      role: 'user',
+      content: question
+    });
+
+    console.log('Sending', messages.length, 'messages to AI');
+
     const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
       method: 'POST',
       headers: {
@@ -41,24 +87,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an expert AI tutor specializing in ${subject === 'general' ? 'all academic subjects' : subject}. You help students with homework, explain concepts clearly, solve problems step-by-step, and provide detailed explanations for multiple choice questions. 
-
-For multiple choice questions:
-- Analyze each option (A, B, C, D)
-- Explain why the correct answer is right
-- Explain why the incorrect answers are wrong
-- Provide context and background information
-
-Always be encouraging, educational, and thorough in your explanations. Use formatting like **bold** for emphasis and bullet points for clarity.`
-          },
-          {
-            role: 'user',
-            content: question
-          }
-        ],
+        messages: messages,
         max_tokens: 1500,
         temperature: 0.7,
       }),

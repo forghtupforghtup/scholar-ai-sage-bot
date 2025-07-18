@@ -56,7 +56,13 @@ const Index = () => {
 
     // Simulate AI thinking time
     setTimeout(async () => {
-      const aiResponse = await generateAIResponse(inputValue, selectedSubject);
+      // Pass conversation history to AI (exclude welcome message)
+      const conversationHistory = messages.slice(1).map(msg => ({
+        content: msg.content,
+        sender: msg.sender
+      }));
+      
+      const aiResponse = await generateAIResponse(inputValue, selectedSubject, conversationHistory);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: aiResponse,

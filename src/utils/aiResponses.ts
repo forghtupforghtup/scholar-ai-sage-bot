@@ -1,10 +1,14 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-export const generateAIResponse = async (question: string, subject: string): Promise<string> => {
+export const generateAIResponse = async (
+  question: string, 
+  subject: string, 
+  conversationHistory: Array<{content: string, sender: 'user' | 'ai'}> = []
+): Promise<string> => {
   try {
     const { data, error } = await supabase.functions.invoke('github-ai-chat', {
-      body: { question, subject }
+      body: { question, subject, conversationHistory }
     });
 
     if (error) {
